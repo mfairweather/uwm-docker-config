@@ -1,0 +1,5 @@
+*.crt
+*.key
+*/*.crt
+*/*.key
+.DS_Store
