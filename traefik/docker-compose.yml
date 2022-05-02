@@ -1,0 +1,64 @@
+version: '3.3'
+
+services:
+  proxy:
+    # The official v2 Traefik docker image
+    image: traefik:latest
+    # Enables the web UI and tells Traefik to listen to docker
+    # command: --api.insecure=true --providers.docker
+    ports:
+      # The HTTP port
+      - "80:80"
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+      # - "3306:3306"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./dynamic.yaml:/etc/traefik/dynamic.yaml:ro
+      - ./static.yaml:/etc/traefik/traefik.yaml
+      - ./certs:/certs
+    restart: always
+    # labels:
+      # - "traefik.http.routers.proxy.service=api@internal"
+      # - "traefik.http.routers.proxy.entrypoints=web-secure"
+      # - "traefik.http.routers.proxy.tls=true"
+      # - "traefik.tcp.routers.proxy.entrypoints=mysql"
+    networks:
+      - proxy
+
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: traefik/whoami
+    labels:
+      # - "traefik.http.routers.whoami-insecure.entrypoints=web"
+      # - "traefik.http.routers.whoami-insecure.middlewares=redirect-to-https"
+      - "traefik.http.routers.whoami.entrypoints=web-secure"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.test`)"
+      - "traefik.http.routers.whoami.tls=true"
+    restart: always
+    networks:
+      - proxy
+  
+#   db:
+#     image: mariadb
+#     volumes:
+#       - db_data:/var/lib/mysql
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: somewordpress
+#       MYSQL_DATABASE: somedb
+#       MYSQL_USER: wordpress
+#       MYSQL_PASSWORD: wordpress
+#     ports:
+#       - '${FORWARD_DB_PORT:-3306}:3306'
+#     networks:
+#       - proxy
+
+# volumes:
+#   db_data: {}
+
+networks:
+  proxy:
+    external: true        

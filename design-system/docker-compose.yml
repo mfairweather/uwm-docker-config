@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+  php:
+    image: php:7.4-apache
+    volumes:
+      - ~/Code/uwm-ds/public:/var/www/html/
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.design-system.rule=Host(`ds.test`)"
+
+networks:
+  proxy:
+    external: true
