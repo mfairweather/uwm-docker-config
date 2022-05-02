@@ -22,9 +22,9 @@ services:
       - 'host.docker.internal:host-gateway'
     volumes:
       - 'wordpress_data:/bitnami/wordpress'
-      - ~/Code/uwm-wpdev/wp-content/themes:/bitnami/wordpress/wp-content/themes
-      - ~/Code/uwm-wpdev/wp-content/plugins:/bitnami/wordpress/wp-content/plugins
-      - ~/Code/uwm-wpdev/wp-content/mu-plugins:/bitnami/wordpress/wp-content/mu-plugins
+      - ~/Code/wp/themes:/bitnami/wordpress/wp-content/themes
+      - ~/Code/wp/plugins:/bitnami/wordpress/wp-content/plugins
+      - ~/Code/wp/mu-plugins:/bitnami/wordpress/wp-content/mu-plugins
     depends_on:
       - mariadb
     environment:
