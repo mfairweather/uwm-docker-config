@@ -4,12 +4,12 @@ services:
   php:
     image: php:7.4-apache
     volumes:
-      - ~/Code/uwm-ds/public:/var/www/html/
+      - ~/CodeExperiments/ds-astro/dist:/var/www/html/
     networks:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ds.rule=Host(`ds.test`)"
+      - "traefik.http.routers.ds-astro.rule=Host(`ds-astro.test`)"
 
 networks:
   proxy:
