@@ -1,0 +1,50 @@
+version: '3.1'
+
+services:
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10.6.4-focal
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
+    volumes:
+      - wp_data:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=wordpress-test
+      - MYSQL_DATABASE=wordpress-test
+      - MYSQL_USER=wordpress-test
+      - MYSQL_PASSWORD=wordpress-test
+    expose:
+      - 3306
+      - 33060
+    networks:
+      - backend
+  wordpress:
+    image: wordpress:latest
+    volumes:
+      - ~/CodeExperiments/wp/themes:/var/www/html/wp-content/themes
+      - ~/CodeExperiments/wp/plugins:/var/www/html/wp-content/plugins
+      - ~/CodeExperiments/wp/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ~/CodeExperiments/wp/.htaccess:/var/www/html/.htaccess
+    # ports:
+    #  - 80:80
+    restart: always
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress-test
+      - WORDPRESS_DB_PASSWORD=wordpress-test
+      - WORDPRESS_DB_NAME=wordpress-test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.rule=Host(`wordpress.localhost`)"
+    networks:
+      - proxy
+      - backend
+volumes:
+  wp_data:
+
+networks:
+  proxy:
+    external: true
+  backend:
