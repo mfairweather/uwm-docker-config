@@ -26,6 +26,7 @@ services:
       - ~/CodeExperiments/wp/themes:/var/www/html/wp-content/themes
       - ~/CodeExperiments/wp/plugins:/var/www/html/wp-content/plugins
       - ~/CodeExperiments/wp/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ~/CodeExperiments/wp/wp-config.php:/var/www/html/wp-config.php
       - ~/CodeExperiments/wp/.htaccess:/var/www/html/.htaccess
     # ports:
     #  - 80:80
@@ -38,6 +39,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress.rule=Host(`wordpress.localhost`)"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+      - 'wordpress.localhost:host-gateway'
     networks:
       - proxy
       - backend
