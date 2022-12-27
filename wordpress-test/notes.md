@@ -6,6 +6,10 @@ Create a ```.htaccess``` and ```wp-config.php`` file in the same place you creat
 
 Create a directory and ```docker-compose.yml``` file. It does not matter where this exists or the name, organize it how it would make sense for you.
 
+Copy the contents from this ```docker-compose.yml``` file into the ```docker-compose.yml``` file that was created the previous step.
+
+Under the 'labels' section of the ```docker-compose.yml``` find the line ```"traefik.http.routers.wordpress.rule=Host(`wordpress.localhost`)"```. Change to host to whatever local URL you'd like, but it must end in ```.localhost```
+
 Open terminal, navigate to your ```docker-compose.yml```.
 
 Run  ```docker compose up -d```
@@ -19,6 +23,15 @@ Edit the ```wp-config.php``` file to add multisite support ```define( 'WP_ALLOW_
 Go to wordpress and install multisite
 
 Copy and paste the code for the ```wp-config.php``` and ```.htaccess``` files.
+
+Go to your wordpress ```.localhost``` domain and multisite should be installed.
+
+
+
+
+
+
+
 
 
 
