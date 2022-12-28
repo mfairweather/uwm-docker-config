@@ -1,14 +1,16 @@
 ## Install
 
-Create three directories that we can map container volumes ```plugins```, ```themes```, and ```mu-plugins```. Does not matter where these are, but this is where your local copies of themes and plugins reside. 
+Create three directories that we can map container volumes: ```plugins```, ```themes```, and ```mu-plugins```. It does not matter where these are, but this is where your local copies of themes and plugins reside. 
 
-Create a ```.htaccess``` and ```wp-config.php`` file in the same place you created the three directories. Leave them empty.
+Create a ```.htaccess``` and ```wp-config.php``` file in the same place you created the three directories. Leave them empty.
 
-Create a directory and ```docker-compose.yml``` file. It does not matter where this exists or the name, organize it how it would make sense for you.
+Create a directory and ```docker-compose.yml``` file. It does not matter where this exists or the name, organize it how it would make sense for you. (A path like '/containers/wordpress-latest' would make sense)
 
 Copy the contents from this ```docker-compose.yml``` file into the ```docker-compose.yml``` file that was created the previous step.
 
 Under the 'labels' section of the ```docker-compose.yml``` find the line ```"traefik.http.routers.wordpress.rule=Host(`wordpress.localhost`)"```. Change to host to whatever local URL you'd like, but it must end in ```.localhost```
+
+Change the line ```'wordpress.localhost:host-gateway'``` to the url that was defined in the previous step.
 
 Open terminal, navigate to your ```docker-compose.yml```.
 
