@@ -1,55 +1,53 @@
-version: '2'
+version: '3.1'
+
 services:
-  mariadb:
-    image: docker.io/bitnami/mariadb:10.6
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10.6.4-focal
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
     volumes:
-      - 'mariadb_data:/bitnami/mariadb'
+      - wp_data:/var/lib/mysql
+    restart: always
     environment:
-      # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      - ALLOW_EMPTY_PASSWORD=yes
-      - MARIADB_USER=bn_wordpress
-      - MARIADB_DATABASE=bitnami_wordpress
-    ports:
-      - '3306:3306'
+      - MYSQL_ROOT_PASSWORD=uwm-wordpress
+      - MYSQL_DATABASE=uwm-wordpress
+      - MYSQL_USER=uwm-wordpress
+      - MYSQL_PASSWORD=uwm-wordpress
+    expose:
+      - 3306
+      - 33060
     networks:
       - backend
   wordpress:
-    image: docker.io/bitnami/wordpress-nginx:5
-    # ports:
-    #   - '80:8080'
-    #   - '443:8443'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+    image: wordpress:latest
     volumes:
-      - 'wordpress_data:/bitnami/wordpress'
-      - ~/Code/wp/themes:/bitnami/wordpress/wp-content/themes
-      - ~/Code/wp/plugins:/bitnami/wordpress/wp-content/plugins
-      - ~/Code/wp/mu-plugins:/bitnami/wordpress/wp-content/mu-plugins
-    depends_on:
-      - mariadb
+      - ~/Code/uwmwp/themes:/var/www/html/wp-content/themes
+      - ~/Code/uwmwp/plugins:/var/www/html/wp-content/plugins
+      - ~/Code/uwmwp/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ~/Code/uwmwp/wp-config.php:/var/www/html/wp-config.php
+      - ~/Code/uwmwp/.htaccess:/var/www/html/.htaccess
+    # ports:
+    #  - 80:80
+    restart: always
     environment:
-      # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      - ALLOW_EMPTY_PASSWORD=yes
-      - WORDPRESS_DATABASE_HOST=mariadb
-      - WORDPRESS_DATABASE_PORT_NUMBER=3306
-      - WORDPRESS_DATABASE_USER=bn_wordpress
-      - WORDPRESS_DATABASE_NAME=bitnami_wordpress
-      - WORDPRESS_ENABLE_MULTISITE=yes
-      - WORDPRESS_MULTISITE_HOST=uwmwp.test
-      - WORDPRESS_MULTISITE_NETWORK_TYPE=subdirectory
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=uwm-wordpress
+      - WORDPRESS_DB_PASSWORD=uwm-wordpress
+      - WORDPRESS_DB_NAME=uwm-wordpress
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.bitnamiwordpress-nginx.rule=Host(`uwmwp.test`)"
-      # - 'traefik.http.services.wordpress.loadbalancer.server.port=80'
-      # - "traefik.http.routers.wordpress.tls=true"
+      - "traefik.http.routers.wordpress.rule=Host(`wp.localhost`)"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+      - 'wp.localhost:host-gateway'
     networks:
       - proxy
       - backend
 volumes:
-  mariadb_data:
-    driver: local
-  wordpress_data:
-    driver: local
+  wp_data:
+
 networks:
   proxy:
     external: true
